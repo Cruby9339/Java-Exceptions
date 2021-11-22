@@ -13,23 +13,29 @@ public class Main {
                 processFile(reader);
         } catch(FileNotFoundException ex){
             System.out.println("File not found: " + args[0]);
-        } catch(IOException ex){
+        } catch(IOException ex) {
             System.out.println("Error - " + ex.getMessage());
+        }catch(InvalidStatementException ex){
+            System.out.println("Error invalid statement - " + ex.getMessage());
         } catch(Exception ex){
             System.out.println("Error processing file - " + ex.getMessage());
         }
 
     }
 
-    private static void processFile(BufferedReader reader) throws IOException {
+    private static void processFile(BufferedReader reader) throws IOException, InvalidStatementException {
 
         String inputLine = null;
         while((inputLine = reader.readLine()) != null)
             performOperation(inputLine);
     }
 
-    private static void performOperation(String inputLine) {
+    private static void performOperation(String inputLine) throws InvalidStatementException{
         String[] parts = inputLine.split(" ");
+        if(parts.length != 3){
+            throw new InvalidStatementException(
+                    "Statement must have 3 parts: operation leftVal rightVal");
+        }
         MathOperation operation = MathOperation.valueOf(parts[0].toUpperCase());
         int leftVal = valueFromWord(parts[1]);
         int rightVal = valueFromWord(parts[2]);
@@ -52,6 +58,12 @@ public class Main {
                 result = leftVal * rightVal;
                 break;
             case DIVIDE:
+                if(rightVal == 0){
+//                    IllegalArgumentException exception =
+//                            new IllegalArgumentException("Zero rightVal not permitted with divide operation");
+//                    throw exception;
+                    throw new IllegalArgumentException("Zero rightVal not permitted with divide operation");
+                }
                 result = leftVal / rightVal;
                 break;
         }
