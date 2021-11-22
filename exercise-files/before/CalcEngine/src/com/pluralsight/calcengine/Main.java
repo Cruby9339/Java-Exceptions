@@ -1,29 +1,31 @@
 package com.pluralsight.calcengine;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.nio.Buffer;
 
 public class Main {
 
     public static void main(String[] args) {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(args[0]));
-            String inputLine = null;
-            while((inputLine = reader.readLine()) != null)
-                performOperation(inputLine);
-        } catch (Exception ex) {
-            System.out.println("Error: " + ex.getMessage());
-        } finally {
-            try{
-                System.out.println("Closing file - " + args[0]);
-                reader.close();
-            }catch(Exception ex){
-                System.out.println("Error closing file");
-            }
-
+        try (BufferedReader reader = new BufferedReader(new FileReader(args[0]))){
+                processFile(reader);
+        } catch(FileNotFoundException ex){
+            System.out.println("File not found: " + args[0]);
+        } catch(IOException ex){
+            System.out.println("Error - " + ex.getMessage());
+        } catch(Exception ex){
+            System.out.println("Error processing file - " + ex.getMessage());
         }
 
+    }
+
+    private static void processFile(BufferedReader reader) throws IOException {
+
+        String inputLine = null;
+        while((inputLine = reader.readLine()) != null)
+            performOperation(inputLine);
     }
 
     private static void performOperation(String inputLine) {
